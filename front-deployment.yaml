@@ -1,0 +1,27 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  selector:
+    matchLabels:
+      app: flightsproc
+      tier: frontend
+      track: stable
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: flightsproc
+        tier: frontend
+        track: stable
+    spec:
+      containers:
+        - name: front
+          image: "485834970471.dkr.ecr.us-east-1.amazonaws.com/blog-app-front:latest"
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/usr/sbin/nginx","-s","quit"]
+...

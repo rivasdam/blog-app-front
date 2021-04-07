@@ -1,0 +1,31 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  selector:
+    matchLabels:
+      app: flightsproc
+      tier: backend
+      track: stable
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: flightsproc
+        tier: backend
+        track: stable
+    spec:
+      serviceAccountName: ddb-sa
+      containers:
+        - name: flightsproc
+          image: "485834970471.dkr.ecr.us-east-1.amazonaws.com/blog-app-back:latest"
+          env:
+            - name: AWS_DEFAULT_REGION
+              value: "us-east-1"
+            - name: ENABLE_IRP
+              value: "true"
+          ports:
+            - containerPort: 3000
+...

@@ -1,0 +1,144 @@
+<html>
+
+<head>
+    <title>Octank Travel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        .titlebar {
+            background-color: #6298e0;
+            text-align: center;
+            padding: 5px;
+            color: white;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .inputs {
+            background-image: url('./background_search.jpg');
+            justify-content: center;
+            text-align: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+            height: 25em;
+        }
+
+        .inputs input {
+            margin-top: 40;
+            width: 21rem;
+            padding: .66rem 1rem;
+            margin-right: 2.22rem;
+            border: 1px solid #fff;
+            border-radius: 4px;
+            font-size: .77em;
+            font-weight: 500;
+            height: 50;
+            text-align: center;
+        }
+
+        .inputs p {
+            padding-top: 100;
+            font-size: 18;
+            font-weight: bold;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .submit {
+            text-align: center;
+            padding-top: 30;
+        }
+
+        .submit a {
+            border-radius: 4px;
+            padding: .72rem 1.7rem;
+            background-color: #cca353;
+            color: #ffffff;
+            font-weight: 600;
+            transition: background-color .5s;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .submit a:hover {
+            cursor: pointer;
+            background-color: #a7874b;
+        }
+
+        #resultados {
+            text-align: center;
+            margin-left: auto;
+            margin-right: auto;
+            padding-top: 30;
+        }
+
+        td {
+            border-width: 1;
+            border-color: black;
+            border-radius: 10;
+
+        }
+    </style>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+        $(function () {
+            $("#datepicker").datepicker();
+        });
+    </script>
+</head>
+
+<body>
+    <div class="titlebar">
+        <h1>Octank Travel - Flight Search</h1>
+    </div>
+
+    <div class="inputs">
+        <p class="subtitle">Find your next flight!</p>
+        <input type="text" id="from" placeholder="From..." /><input type="text" id="to" placeholder="To..." /><input
+            type="text" id="datepicker" placeholder="11-11-2019" />
+        <div class="submit">
+            <a id="search" >Search</a>
+        </div>
+    </div>
+    <div id="content">
+        <table id="resultados">
+            <tr></tr>
+        </table>
+    </div>
+
+    <script type="text/javascript">
+        $("#search").click(function () {
+            let date = new Date($('#datepicker').val());
+            let newDate = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+            let params = '?from=' + $('#from').val() + '&to=' + $('#to').val() + '&date=' + newDate;
+            let urlAPI = 'https://7fbvuzi711.execute-api.us-east-1.amazonaws.com/prod/getflights' + params;
+
+            $.ajax({
+                url: urlAPI
+                //url: "https://7fbvuzi711.execute-api.us-east-1.amazonaws.com/prod/getflights?from=EZE&to=MAD&date=2019-11-25"
+            }).then(function (data) {
+                if (!$.isArray(data) || !data.length) {
+                    //handler either not an array or empty array
+                    $("#resultados").html("<tr><tr/>");
+                    alert("No flights found for the selected date!");
+
+                } else {
+                    //$('#content').html(JSON.stringify(data, null, 2));
+                    $.each(data, function (i) {
+                        $("#resultados").html("<tr><tr/>");
+                        var tr = $('<tr/>');
+                        tr.append("<td>" + data[i].id + "</td>");
+                        tr.append("<td>" + data[i].airline + "</td>");
+                        tr.append("<td>" + data[i].from + "</td>");
+                        tr.append("<td>" + data[i].to + "</td>");
+                        tr.append("<td>" + data[i].dep_time + "</td>");
+                        tr.append("<td>" + data[i].arr_time + "</td>");
+                        $("#resultados").append(tr);
+                    });
+                }
+
+            });
+
+        });
+    </script>
+</body>
+
+</html>

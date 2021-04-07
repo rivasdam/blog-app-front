@@ -1,0 +1,83 @@
+<html>
+
+<head>
+    <title>Demo App</title>
+
+</head>
+
+<body>
+    <h1>Flights processing - Demo App</h1>
+    <div id="content"></div>
+    <script type="text/javascript">
+
+        function generateRandomString(length) {
+            var result           = '';
+            var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            var charactersLength = characters.length;
+            for ( var i = 0; i < length; i++ ) {
+                result += characters.charAt(Math.floor(Math.random() * charactersLength));
+            }
+            return result;
+        }
+
+        function generateRandomNumberBetween(min, max){
+            return Math.floor(Math.random()* max)+min;
+        }
+
+        let startTime, endTime;
+
+        startTime = performance.now();
+        console.time("t");
+
+        window.onload = async function () {
+
+            let response;
+            let html = '';
+            let i = 0;
+            let count=0;
+            let procs2019 = [];
+            let procs2020 = [];
+            let procs2021 = [];
+            let procs2022 = [];
+
+            //for (i = 0; i <= 400; i++) { fetch('http://flightsproc:3000/flightsproc')
+                fetch('/flightsproc')
+                    .then(res => { return res.text() })
+                    .then(data => {
+                        
+                        html += data + "<br />";
+
+                        let processes = JSON.parse(data);
+                        
+                        
+                        
+
+                        for (var i=0; i <= processes.length-1; i++){
+                            if ((processes[i].date).search("2019") != -1 ){
+                                procs2019.push(processes[i]);
+                            } else if ((processes[i].date).search("20") != -1 ){
+                                procs2020.push(processes[i]);
+                            }else if ((processes[i].date).search("21") != -1 ){
+                                procs2021.push(processes[i]);
+                            }else if ((processes[i].date).search("22") != -1 ){
+                                procs2022.push(processes[i]);
+                            }
+                            //Validation hash simulation
+                            let rnd = generateRandomString(generateRandomNumberBetween(processes[i].difference,1000));
+                            console.log("Validation token: "+rnd);
+                        }                        
+                        //document.getElementById("content").innerHTML = html
+                        endTime = performance.now();
+                        document.getElementById("content").innerHTML = 'Finished flights processing for 2019-2022 period: <br />2019: '+procs2019.length+'<br />2020: '+procs2020.length+'<br />2021: '+procs2021.length+'<br />2022: '+procs2022.length+'<br /><br /> Elapsed time: '+ (Math.round(((endTime-startTime)+Number.EPSILON)*100)/100)+" ms";
+                    });
+            
+        }
+
+        endTime = performance.now();
+        //console.debug('Elapsed time: '+ (Math.round(((endTime-startTime)+Number.EPSILON)*100)/100))+' ms';
+        console.timeEnd("t");
+
+    </script>
+</body>
+
+</html>
